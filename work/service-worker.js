@@ -43,3 +43,16 @@ self.addEventListener('activate', function(e) {
   );
   return self.clients.claim();
 });
+
+self.addEventListener('fetch', function(e) {
+  console.log('[ServiceWorker] Fetch', e.request.url);
+  e.respondWith(
+    caches.match(e.request).then(function(response) {
+      return response || fetch(e.request);
+    })
+  );
+});
+
+/*
+Stepping from inside, out, caches.match() evaluates the web request that triggered the fetch event, and checks to see if it's available in the cache. It then either responds with the cached version, or uses fetch to get a copy from the network. The response is passed back to the web page with e.respondWith().
+*/
